@@ -231,25 +231,28 @@ foreach ($pages as $PageID)
 		}
 		else
 		{
-			// remove background 
+			// we have a threshold file output.0000.png
+		
+			// remove background from threshold file so that it won't obscure 
+			// text on the b&w image
 			$command = "mogrify -transparent white output.0000.png";
 			echo $command . "\n";
 			
 			system($command);
 			
-			// base must be in colour if we want a colour plate
+			// b&w image must also be in colour if we want a colour result
 			$command = "mogrify $output_filename -define png:color-type=2 $output_filename";
 			echo $command . "\n";
 
 			system($command);			
 			
-			// add the threshold image onto the outout image
+			// add the threshold image over the b&w image
 			$command = "magick composite output.0000.png $output_filename  $output_filename";
 			echo $command . "\n";
 			
 			system($command);
 
-			// resize
+			// resize, set depth to 8
 			$depth = 8;
 			$command = "mogrify -resize $width -depth $depth " . $output_filename;
 	
