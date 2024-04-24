@@ -136,6 +136,16 @@ $pages=array(
 
 );
 
+$pages=array(
+//58740584,
+46027136,
+46027137,
+);
+
+$pages=array(
+16281585
+);
+
 // need to think carefully about detecting photos, plates, etc.
 
 $force_bw = true;
@@ -160,7 +170,7 @@ foreach ($pages as $PageID)
 	$source_filename = $PageID . '.jpg';
 	$output_filename = $PageID . '.png';
 	
-	$file_list[] = $output_filename;
+	
 	
 	if (!file_exists($output_filename))
 	{
@@ -191,7 +201,8 @@ foreach ($pages as $PageID)
 			"-O $output_filename", // <outfile>: dump thresholded image as PNG
 			
 			// 248475, dark background, removes it well
-			//"-T 100", // <bw threshold>: set 1 bpp threshold (def: 188)
+			// 58740584
+			"-T 100", // <bw threshold>: set 1 bpp threshold (def: 188)
 			
 			// 63294239 B&W photo, seems to work quite well
 			//"-T 120", // <bw threshold>: set 1 bpp threshold (def: 188)
@@ -228,38 +239,66 @@ foreach ($pages as $PageID)
 			echo $command . "\n";
 	
 			system($command);
+			
+			$file_list[] = $output_filename;
 		}
 		else
 		{
 			// we have a threshold file output.0000.png
-		
-			// remove background from threshold file so that it won't obscure 
-			// text on the b&w image
-			$command = "mogrify -transparent white output.0000.png";
-			echo $command . "\n";
 			
-			system($command);
+			if (1)
+			{
+				$output_filename = $PageID . '-rgb.jpg';
 			
-			// b&w image must also be in colour if we want a colour result
-			$command = "mogrify $output_filename -define png:color-type=2 $output_filename";
-			echo $command . "\n";
+				// based on https://www.imagemagick.org/discourse-server/viewtopic.php?t=28676
+				$command = "convert $source_filename -negate -channel all -normalize -negate -channel all $output_filename";
 
-			system($command);			
+				echo $command . "\n";
 			
-			// add the threshold image over the b&w image
-			$command = "magick composite output.0000.png $output_filename  $output_filename";
-			echo $command . "\n";
-			
-			system($command);
-
-			// resize, set depth to 8
-			$depth = 8;
-			$command = "mogrify -resize $width -depth $depth " . $output_filename;
+				system($command);
+				
+				// resize, set depth to 8
+				$depth = 8;
+				$command = "mogrify -resize $width -depth $depth " . $output_filename;
 	
-			echo $command . "\n";
+				echo $command . "\n";
 			
-			system($command);
+				system($command);
+				
+				$file_list[] = $output_filename;				
+			}
+			else
+			{
+		
+				// remove background from threshold file so that it won't obscure 
+				// text on the b&w image
+				$command = "mogrify -transparent white output.0000.png";
+				echo $command . "\n";
 			
+				system($command);
+			
+				// b&w image must also be in colour if we want a colour result
+				$command = "mogrify $output_filename -define png:color-type=2 $output_filename";
+				echo $command . "\n";
+
+				system($command);			
+			
+				// add the threshold image over the b&w image
+				$command = "magick composite output.0000.png $output_filename  $output_filename";
+				echo $command . "\n";
+			
+				system($command);
+
+				// resize, set depth to 8
+				$depth = 8;
+				$command = "mogrify -resize $width -depth $depth " . $output_filename;
+	
+				echo $command . "\n";
+			
+				system($command);
+				
+				$file_list[] = $output_filename;
+			}
 		}
 		
 		// clean up
