@@ -14,6 +14,15 @@ convert 16281585.jpg -negate -channel all -normalize -negate -channel all 162815
 
 where `16281585.jpg` is a BHL page image. This is based on the thread [Removing orange tint-mask from color-negatives](https://www.imagemagick.org/discourse-server/viewtopic.php?t=14081).
 
+## Making small PDFs
+
+Reading the original work by Google there is a script to build PDF from jbig2 output that reduces PDF size using the encodings. Original code in Python 2, I failed to get it working for Python 3, so got ChatGPT to convert it to PHP. Works fine. Example:
+
+```
+jbig2 -s -p -T 100 *.jp2       
+pdf.php output > output.pdf
+```
+
 
 ## Reading
 
